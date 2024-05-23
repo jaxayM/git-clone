@@ -29,8 +29,9 @@ def main():
         if args[2] == "-w":
             with open(args[3], 'rb') as f:
                 content = f.read()
+                cst = str(content, "utf8")
                 o = hashlib.sha1(content).hexdigest()
-                fst = f"blob {len(content)}\0{content}"
+                fst = f"blob {len(content)}\0{cst}"
                 os.mkdir(f".git/objects/{o[:2]}")
             with open(f".git/objects/{o[:2]}/{o[2:]}", "wb") as file:
                 out = zlib.compress(bytes(fst, "utf8"))
