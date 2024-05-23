@@ -3,7 +3,6 @@ import os
 import zlib
 
 def main():
-    print("Logs from your program will appear here!")
 
     args = sys.argv
     command = args[1]
@@ -24,7 +23,7 @@ def main():
             elif args[2] == "-p":
                 out = decoded.split("\0")[1]
             else:
-                print("error")
+                raise RuntimeError(f"Incorrect use of command #{command}")
             sys.stdout.write(out)
     else:
         raise RuntimeError(f"Unknown command #{command}")
