@@ -1,21 +1,12 @@
 import sys
 import os
-
+import zlib
 
 def main():
-    # You can use print statements as follows for debugging, they'll be visible when running tests.
     print("Logs from your program will appear here!")
 
-    # Uncomment this block to pass the first stage
-    # args: list[str] = sys.argv
-    # if (args[1] == "init"):
-    #     os.makedirs(".git/objects")
-    #     os.makedirs(".git/refs")
-    #     f = open(".git/HEAD", 'w')
-    #     f.write("ref: refs/heads/main\n")
-    #     f.close()
-    
-    command = sys.argv[1]
+    args = sys.argv
+    command = args[1]
     if command == "init":
         os.mkdir(".git")
         os.mkdir(".git/objects")
@@ -23,6 +14,18 @@ def main():
         with open(".git/HEAD", "w") as f:
             f.write("ref: refs/heads/main\n")
         print("Initialized git directory")
+    elif command == "cat-file":
+        with open(f".git/objects/{args[3][:2]}/{args[3][2:]}", "rb") as file:
+            decoded = str(zlib.decompress(file.read()), "utf8")
+            if args[2] == "-t":
+                out = decoded.split(" ")[0]
+            elif args[2] == "-s":
+                out = decoded.split("\0")[0].split(" ")[1]
+            elif args[2] == "-p":
+                out = decoded.split("\0")[1]
+            else:
+                print("error")
+            sys.stdout.write(out)
     else:
         raise RuntimeError(f"Unknown command #{command}")
 
