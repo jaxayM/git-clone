@@ -1,7 +1,7 @@
 import sys
 import os
 import zlib
-
+import hashlib
 def main():
 
     args = sys.argv
@@ -25,6 +25,17 @@ def main():
             else:
                 raise RuntimeError(f"Incorrect use of command #{command}")
             sys.stdout.write(out)
+    elif command == "hash-object":
+        if args[2] == "-w":
+            with open(args[3], 'rb') as f:
+                content = f.read()
+                o = hashlib.sha1(content).hexdigest()
+                fst = f"blob {len(content)}\0{content}"
+                os.mkdir(f".git/objects/{o[:2]}")
+            with open(f".git/objects/{o[:2]}/{o[2:]}", "wb") as file:
+                out = zlib.compress(bytes(fst, "utf8"))
+                sys.stdout.write(o)
+                file.write(out)
     else:
         raise RuntimeError(f"Unknown command #{command}")
 
